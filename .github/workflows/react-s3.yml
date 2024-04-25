@@ -5,32 +5,32 @@ on:
     inputs:
       node_version:
         type: string
-        description: 'Node.js version to use'
         required: true
         default: '14'
       s3_bucket_name:
         type: string
-        description: 'S3 bucket name'
         required: true
       source_dir:
         type: string
-        description: 'Directory of build files to deploy'
         required: true
         default: 'build'
       cloudfront_distribution_id:
         type: string
-        description: 'CloudFront distribution ID for invalidation'
         required: true
       aws_region:
         type: string
-        description: 'AWS region for deployment'
         required: true
         default: 'us-east-1'
       paths_to_invalidate:
         type: string
-        description: 'Paths to invalidate in CloudFront'
         required: false
         default: '/*'
+      aws_access_key_id:
+        type: string
+        required: true
+      aws_secret_access_key:
+        type: string
+        required: true
 
 jobs:
   build-and-deploy:
@@ -51,8 +51,8 @@ jobs:
           args: --acl public-read --follow-symlinks --delete
         env:
           AWS_S3_BUCKET: ${{ inputs.s3_bucket_name }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key_id }}
+          AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
           SOURCE_DIR: ${{ inputs.source_dir }}
       - name: Invalidate CloudFront Distribution
         uses: chetan/invalidate-cloudfront-action@v1
@@ -60,5 +60,5 @@ jobs:
           CLOUDFRONT_DISTRIBUTION_ID: ${{ inputs.cloudfront_distribution_id }}
           PATHS: ${{ inputs.paths_to_invalidate }}
           AWS_REGION: ${{ inputs.aws_region }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key_id }}
+          AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
