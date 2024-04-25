@@ -23,7 +23,6 @@ on:
         default: 'us-east-1'
       paths_to_invalidate:
         type: string
-        required: false
         default: '/*'
       aws_access_key_id:
         type: string
